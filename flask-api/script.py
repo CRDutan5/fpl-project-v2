@@ -53,13 +53,13 @@ def creating_cheaper_alternative_list(current_player, element_type):
     list_of_alt[0]["alternatives"] = list_of_alt[0]["alternatives"][:2]
     
     position = position_hashmap[element_type]
-    players_with_recommendations[position].append(list_of_alt)
+    players_with_recommendations[position].append({"my_player": current_player, "alternatives": list_of_alt[0]["alternatives"]})
+
 
 def generate_for_all_players():
     for player in my_players_details:
         position = player["element_type"]
         creating_cheaper_alternative_list(player, position)
-
-print(generate_for_all_players())
+    return players_with_recommendations
 
 # print(json.dumps(players_with_recommendations, indent=4))
