@@ -12,10 +12,8 @@ my_team_key = os.getenv("MY_TEAM_ID")
 @app.route(f"/api/team/{my_team_key}/alternatives", methods = ["GET"])
 def info():
     information = generate_for_all_players()
-    return jsonify(information)
+    return jsonify(information["defenders"])
 
 if __name__ == "__main__":
     # Make sure to change debug to false when pushing to prod
     app.run(debug=True)
-
-print(generate_for_all_players())

@@ -1,25 +1,19 @@
-import pandas as pd
-import requests
-from dotenv import load_dotenv
-import os
-import json
 from utils import get_main_response, my_current_team_picks_ids
 
-
-load_dotenv()
-
-my_team_key = os.getenv("MY_TEAM_ID")
-
+# Main api response
 main_response = get_main_response()
+# My current team ids
 current_team_ids = my_current_team_picks_ids()
 
+# Stores all the players in the premier league
 all_premier_league_players = sorted(main_response["elements"], key= lambda x: x['id'])
-my_players_details = []
 
+# Stores ONLY my players information in the array my_player_details
+my_players_details = []
 for player_id in current_team_ids:
     my_players_details.append(all_premier_league_players[player_id - 1])
 
-
+# Main structure of json to seperate my players based on position
 players_with_recommendations = {
     "goalkeepers": [],
     "defenders": [],
@@ -27,8 +21,10 @@ players_with_recommendations = {
     "forwards": []
 }
 
+# Need hashmap to compare the position number and send it to the appropriate array in players_with_recommendations
 position_hashmap = {1: "goalkeepers", 2: "defenders", 3: "midfielders", 4: "forwards"}
 
+# Takes in a player and position number, generates a list of cheaper alternatives for that player
 def creating_cheaper_alternative_list(current_player, element_type):
     list_of_alt = [{"my_player": current_player, "alternatives": []}]
     
@@ -47,7 +43,7 @@ def creating_cheaper_alternative_list(current_player, element_type):
     position = position_hashmap[element_type]
     players_with_recommendations[position].append({"my_player": current_player, "alternatives": list_of_alt[0]["alternatives"]})
 
-
+# Uses the creating_cheaper_alternative_list function and generates a list of recommendations for all my current players
 def generate_for_all_players():
     for player in my_players_details:
         position = player["element_type"]

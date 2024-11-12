@@ -1,9 +1,7 @@
 import requests
 from dotenv import load_dotenv
 import os
-import json
 import pandas as pd
-
 
 load_dotenv()
 
@@ -15,7 +13,6 @@ def get_main_response():
     main_response = requests.get(main_url).json()
     return main_response
 
-
 # function to grab prev gameweek to look at picks
 def determine_gameweek_for_picks():
     main_response = get_main_response()
@@ -24,6 +21,7 @@ def determine_gameweek_for_picks():
         if gameweeks[i]["is_current"] == True:
             return gameweeks[i]["id"]
 
+# Grabs my players ids for the week
 def my_current_team_picks_ids():
     current_gameweek = determine_gameweek_for_picks()
     url = (f"https://fantasy.premierleague.com/api/entry/{my_team_key}/event/{current_gameweek}/picks/")
