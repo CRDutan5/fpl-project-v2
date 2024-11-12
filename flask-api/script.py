@@ -3,29 +3,21 @@ import requests
 from dotenv import load_dotenv
 import os
 import json
+from utils import get_main_response, my_current_team_picks_ids
 
 
 load_dotenv()
 
 my_team_key = os.getenv("MY_TEAM_ID")
 
-url = (f"https://fantasy.premierleague.com/api/entry/{my_team_key}/event/8/picks/")
-res = requests.get(url).json()
-
-current_team_df = pd.DataFrame(res["picks"])
-current_team_ids = current_team_df["element"].tolist()
-# print(current_team_ids)
-
-main_url = "https://fantasy.premierleague.com/api/bootstrap-static/"
-main_response = requests.get(main_url).json()
+main_response = get_main_response()
+current_team_ids = my_current_team_picks_ids()
 
 all_premier_league_players = sorted(main_response["elements"], key= lambda x: x['id'])
 my_players_details = []
 
 for player_id in current_team_ids:
     my_players_details.append(all_premier_league_players[player_id - 1])
-
-my_players_df = pd.DataFrame(my_players_details)
 
 
 players_with_recommendations = {
@@ -62,4 +54,3 @@ def generate_for_all_players():
         creating_cheaper_alternative_list(player, position)
     return players_with_recommendations
 
-# print(json.dumps(players_with_recommendations, indent=4))
