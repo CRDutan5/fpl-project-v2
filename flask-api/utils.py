@@ -27,6 +27,6 @@ def my_current_team_picks_ids():
     url = (f"https://fantasy.premierleague.com/api/entry/{my_team_key}/event/{current_gameweek}/picks/")
     res = requests.get(url).json()
     current_team_df = pd.DataFrame(res["picks"])
-    current_team_ids = current_team_df["element"].tolist()  
+    current_team_ids = current_team_df["element"].tolist()
     return current_team_ids
 

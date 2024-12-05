@@ -50,3 +50,23 @@ def generate_for_all_players():
         creating_cheaper_alternative_list(player, position)
     return players_with_recommendations
 
+
+def generate_writing(position, file_path):    
+    with open(file_path, 'a') as f:
+        for player in players_with_recommendations[position]:
+            current_player = player["my_player"]
+            f.write(f"Current Player: {current_player['first_name']} {current_player['second_name']}\n")
+            
+            if len(player["alternatives"]) != 0:
+                for alt_player in player["alternatives"]:
+                    f.write(f'We recommend {alt_player["first_name"]} {alt_player["second_name"]} from Team: {alt_player["team"]}\n')
+            else:
+                f.write("No cheaper alternatives\n")
+            
+            f.write("____________________________________________________\n")
+
+generate_for_all_players() # Run this for testing purposes only
+generate_writing("goalkeepers", "recommendation.txt")
+generate_writing("defenders", "recommendation.txt")
+generate_writing("midfielders", "recommendation.txt")
+generate_writing("forwards", "recommendation.txt")
