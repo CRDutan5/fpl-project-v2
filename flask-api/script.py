@@ -1,4 +1,4 @@
-from utils import get_main_response, my_current_team_picks_ids, determine_gameweek_for_picks
+from utils import get_main_response, my_current_team_picks_ids, determine_gameweek_for_picks, send_email
 import datetime
 import sys
 # Main api response
@@ -76,6 +76,7 @@ try :
     generate_writing("defenders", f"Gameweek-{current_gameweek}.txt")
     generate_writing("midfielders", f"Gameweek-{current_gameweek}.txt")
     generate_writing("forwards", f"Gameweek-{current_gameweek}.txt")
+    send_email(current_gameweek)
     current_time = datetime.datetime.now().strftime("%Y-%B-%d %H:%M:%S")
     print(f'[{current_time}] Successfully executed script for Gameweek: {current_gameweek}')
 
