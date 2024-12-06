@@ -9,7 +9,7 @@ Current Player: Antonee Robinson
 We recommend Ashley Young from Team: 8
 We recommend Aaron Wan-Bissaka from Team: 19
 ____________________________________________________
-Current Player: Ibrahima Konaté
+Current Player: Pedro Porro
 We recommend Ashley Young from Team: 8
 We recommend Aaron Wan-Bissaka from Team: 19
 ____________________________________________________
@@ -17,42 +17,42 @@ Current Player: Marc Cucurella Saseta
 We recommend Ashley Young from Team: 8
 We recommend Aaron Wan-Bissaka from Team: 19
 ____________________________________________________
-Current Player: Pedro Porro
-We recommend Ashley Young from Team: 8
-We recommend Aaron Wan-Bissaka from Team: 19
-____________________________________________________
 Current Player: Taylor Harwood-Bellis
 We recommend Sepp van den Berg from Team: 4
 We recommend Cameron Burgess from Team: 10
 ____________________________________________________
+Current Player: Ibrahima Konaté
+We recommend Ashley Young from Team: 8
+We recommend Aaron Wan-Bissaka from Team: 19
+____________________________________________________
+Current Player: Yehor Yarmoliuk
+We recommend Boubakary Soumaré from Team: 11
+____________________________________________________
 Current Player: Leandro Trossard
-We recommend Enzo Fernández from Team: 6
 We recommend Justin Kluivert from Team: 3
+We recommend Alex Iwobi from Team: 9
 ____________________________________________________
 Current Player: Luis Díaz
-We recommend Enzo Fernández from Team: 6
 We recommend Justin Kluivert from Team: 3
+We recommend Alex Iwobi from Team: 9
 ____________________________________________________
 Current Player: Cole Palmer
 We recommend Bukayo Saka from Team: 1
-We recommend Enzo Fernández from Team: 6
+We recommend Justin Kluivert from Team: 3
 ____________________________________________________
 Current Player: Harry Winks
 We recommend Justin Devenny from Team: 7
 We recommend Ethan Nwaneri from Team: 1
 ____________________________________________________
-Current Player: Yehor Yarmoliuk
-We recommend Boubakary Soumaré from Team: 11
-____________________________________________________
 Current Player: Nicolas Jackson
 We recommend Matheus Santos Carneiro Da Cunha from Team: 20
 We recommend João Pedro Junqueira de Jesus from Team: 5
 ____________________________________________________
-Current Player: Ollie Watkins
+Current Player: Erling Haaland
 We recommend Matheus Santos Carneiro Da Cunha from Team: 20
 We recommend João Pedro Junqueira de Jesus from Team: 5
 ____________________________________________________
-Current Player: Erling Haaland
+Current Player: Ollie Watkins
 We recommend Matheus Santos Carneiro Da Cunha from Team: 20
 We recommend João Pedro Junqueira de Jesus from Team: 5
 ____________________________________________________

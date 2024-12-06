@@ -1,9 +1,13 @@
-from utils import get_main_response, my_current_team_picks_ids
-
+from utils import get_main_response, my_current_team_picks_ids, determine_gameweek_for_picks
+import datetime
+import sys
 # Main api response
 main_response = get_main_response()
 # My current team ids
 current_team_ids = my_current_team_picks_ids()
+
+# Current gameweek
+current_gameweek = determine_gameweek_for_picks()
 
 # Stores all the players in the premier league
 all_premier_league_players = sorted(main_response["elements"], key= lambda x: x['id'])
@@ -65,8 +69,19 @@ def generate_writing(position, file_path):
             
             f.write("____________________________________________________\n")
 
-generate_for_all_players() # Run this for testing purposes only
-generate_writing("goalkeepers", "recommendation.txt")
-generate_writing("defenders", "recommendation.txt")
-generate_writing("midfielders", "recommendation.txt")
-generate_writing("forwards", "recommendation.txt")
+
+try :
+    generate_for_all_players()
+    generate_writing("goalkeepers", f"Gameweek-{current_gameweek}.txt")
+    generate_writing("defenders", f"Gameweek-{current_gameweek}.txt")
+    generate_writing("midfielders", f"Gameweek-{current_gameweek}.txt")
+    generate_writing("forwards", f"Gameweek-{current_gameweek}.txt")
+    current_time = datetime.datetime.now().strftime("%Y-%B-%d %H:%M:%S")
+    print(f'[{current_time}] Successfully executed script for Gameweek: {current_gameweek}')
+
+except Exception as e:
+    current_time = datetime.datetime.now().strftime("%Y-%B-%d %H:%M:%S")
+    print(f'[{current_time}] Error executing script: {str(e)}', file=sys.stderr)
+    raise e
+
+
