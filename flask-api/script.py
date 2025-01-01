@@ -1,9 +1,10 @@
 from utils import get_main_response, my_current_team_picks_ids, determine_gameweek_for_picks, send_email
+import datetime
+import sys
 
 main_response = get_main_response()
 all_players_response = sorted(main_response["elements"], key=lambda x: x["now_cost"])
 current_gameweek = determine_gameweek_for_picks()
-
 
 my_player_ids = my_current_team_picks_ids()
 
@@ -51,57 +52,45 @@ for player in all_players_response:
 
 def generate_cheaper_alt():
     curr = my_team.head.next
-
-    while curr != my_team.tail:
+    while curr and curr != my_team.tail:
         curr2 = available_players.head.next
         curr2_prev = available_players.head
-        # Future Referrence: Make sure data types are compared correctly. Form was a string but i had to parse to float.
-        while curr2 != available_players.tail and len(curr.alts) < 3:
+        while curr2 and curr2 != available_players.tail and len(curr.alts) < 3:
             if (float(curr.data["form"]) <= float(curr2.data["form"]) and 
                 curr.data["element_type"] == curr2.data["element_type"] and 
                 curr.data["now_cost"] >= curr2.data["now_cost"]):
                 alt_player = available_players.remove_player(curr2, curr2_prev)
                 curr.alts.append(alt_player)
-            curr2_prev = curr2
+            else:
+                curr2_prev = curr2
             curr2 = curr2.next
         curr = curr.next
 
 generate_cheaper_alt()
 
-# my_team.display()
+def generate_writing(file_path):
+    with open(file_path, 'a') as f:
+        curr = my_team.head.next
+        while curr != my_team.tail:
+            current_player = curr.data
+            f.write(f"{current_player["first_name"]} {current_player["second_name"]} Recommendations:\n")    
+            if len(curr.alts) > 0:
+                for alt_player in curr.alts:
+                    f.write(f"Alt: {alt_player.data["first_name"]} {alt_player.data["second_name"]}\n")
+            else:
+                f.write("No cheaper alternatives!\n")
+            f.write("---------------------------------------\n")
+            curr = curr.next
 
+try:
+    generate_writing(f"Gameweek-{current_gameweek}.txt")
+    print("Sending email...")
+    send_email(current_gameweek)
+    print("Email sent.")
+    current_time = datetime.datetime.now().strftime("%Y-%B-%d %H:%M:%S")
+    print(f'[{current_time}] Successfully executed script for Gameweek: {current_gameweek}')
 
-
-def generate_writing():
-
-    curr = my_team.head.next
-    while curr != my_team.tail:
-        current_player = curr.data
-        print(f"{current_player["first_name"]} {current_player["second_name"]} Recommendations:")    
-        if len(curr.alts) > 0:
-            for alt_player in curr.alts:
-                print(f"Alt: {alt_player.data["first_name"]} {alt_player.data["second_name"]}")
-        else:
-            print("No recommendations!")
-        print("---------------------------------------")
-        curr = curr.next
-
-generate_writing()
-
-
-# try :
-#     generate_for_all_players()
-#     generate_writing("goalkeepers", f"Gameweek-{current_gameweek}.txt")
-#     generate_writing("defenders", f"Gameweek-{current_gameweek}.txt")
-#     generate_writing("midfielders", f"Gameweek-{current_gameweek}.txt")
-#     generate_writing("forwards", f"Gameweek-{current_gameweek}.txt")
-#     send_email(current_gameweek)
-#     current_time = datetime.datetime.now().strftime("%Y-%B-%d %H:%M:%S")
-#     print(f'[{current_time}] Successfully executed script for Gameweek: {current_gameweek}')
-
-# except Exception as e:
-#     current_time = datetime.datetime.now().strftime("%Y-%B-%d %H:%M:%S")
-#     print(f'[{current_time}] Error executing script: {str(e)}', file=sys.stderr)
-#     raise e
-
-
+except Exception as e:
+    current_time = datetime.datetime.now().strftime("%Y-%B-%d %H:%M:%S")
+    print(f'[{current_time}] Error executing script: {str(e)}', file=sys.stderr)
+    raise e
