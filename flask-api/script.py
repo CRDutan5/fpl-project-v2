@@ -1,73 +1,92 @@
-# from utils import get_main_response, my_current_team_picks_ids, determine_gameweek_for_picks, send_email
-# import datetime
-# import sys
-# # Main api response
-# main_response = get_main_response()
-# # My current team ids
-# current_team_ids = my_current_team_picks_ids()
+from utils import get_main_response, my_current_team_picks_ids, determine_gameweek_for_picks, send_email
 
-# # Current gameweek
-# current_gameweek = determine_gameweek_for_picks()
+main_response = get_main_response()
+all_players_response = sorted(main_response["elements"], key=lambda x: x["now_cost"])
+current_gameweek = determine_gameweek_for_picks()
 
-# # Stores all the players in the premier league
-# all_premier_league_players = sorted(main_response["elements"], key= lambda x: x['id'])
 
-# # Stores ONLY my players information in the array my_player_details
-# my_players_details = []
-# for player_id in current_team_ids:
-#     my_players_details.append(all_premier_league_players[player_id - 1])
+my_player_ids = my_current_team_picks_ids()
 
-# # Main structure of json to seperate my players based on position
-# players_with_recommendations = {
-#     "goalkeepers": [],
-#     "defenders": [],
-#     "midfielders": [],
-#     "forwards": []
-# }
+class Player:
+    def __init__(self, id, data, alts = None):
+        self.id = id
+        self.data = data
+        self.alts = alts
+        self.next = None
 
-# # Need hashmap to compare the position number and send it to the appropriate array in players_with_recommendations
-# position_hashmap = {1: "goalkeepers", 2: "defenders", 3: "midfielders", 4: "forwards"}
-
-# # Takes in a player and position number, generates a list of cheaper alternatives for that player
-# def creating_cheaper_alternative_list(current_player, element_type):
-#     list_of_alt = [{"my_player": current_player, "alternatives": []}]
+class PlayerList:
+    def __init__(self):
+        self.head = Player(None, None)
+        self.tail = Player(None, None)
+        self.head.next = self.tail
     
-#     for player in all_premier_league_players:
-#         if (
-#             player["id"] != current_player["id"]
-#             and current_player["now_cost"] >= player["now_cost"]
-#             and player["form"] >= current_player["form"]
-#             and player["element_type"] == element_type
-#         ):
-#             list_of_alt[0]["alternatives"].append(player)
+    def add_player(self, player_node):
+        next_node = self.head.next
+        self.head.next = player_node
+        player_node.next = next_node
 
-#     list_of_alt[0]["alternatives"].sort(key=lambda x: x["form"], reverse=True)
-#     list_of_alt[0]["alternatives"] = list_of_alt[0]["alternatives"][:2]
+    def display(self):
+        i = 1
+        curr = self.head.next
+        while curr != self.tail:
+            print(i, curr.id, curr.data["first_name"], curr.data["second_name"], curr.data["now_cost"] ,curr.alts)
+            curr = curr.next
+            i+=1
+
+    def remove_player(self, player_node, prev_player_node):
+        prev_player_node.next = player_node.next
+        return player_node
+
+my_team = PlayerList()
+available_players = PlayerList()
     
-#     position = position_hashmap[element_type]
-#     players_with_recommendations[position].append({"my_player": current_player, "alternatives": list_of_alt[0]["alternatives"]})
+for player in all_players_response:
+    if player["id"] in my_player_ids:
+        new_player = Player(player["id"], player, [])
+        my_team.add_player(new_player)
 
-# # Uses the creating_cheaper_alternative_list function and generates a list of recommendations for all my current players
-# def generate_for_all_players():
-#     for player in my_players_details:
-#         position = player["element_type"]
-#         creating_cheaper_alternative_list(player, position)
-#     return players_with_recommendations
+    else:
+        new_player = Player(player["id"], player)
+        available_players.add_player(new_player)
+
+def generate_cheaper_alt():
+    curr = my_team.head.next
+
+    while curr != my_team.tail:
+        curr2 = available_players.head.next
+        curr2_prev = available_players.head
+        # Future Referrence: Make sure data types are compared correctly. Form was a string but i had to parse to float.
+        while curr2 != available_players.tail and len(curr.alts) < 3:
+            if (float(curr.data["form"]) <= float(curr2.data["form"]) and 
+                curr.data["element_type"] == curr2.data["element_type"] and 
+                curr.data["now_cost"] >= curr2.data["now_cost"]):
+                alt_player = available_players.remove_player(curr2, curr2_prev)
+                curr.alts.append(alt_player)
+            curr2_prev = curr2
+            curr2 = curr2.next
+        curr = curr.next
+
+generate_cheaper_alt()
+
+# my_team.display()
 
 
-# def generate_writing(position, file_path):    
-#     with open(file_path, 'a') as f:
-#         for player in players_with_recommendations[position]:
-#             current_player = player["my_player"]
-#             f.write(f"Current Player: {current_player['first_name']} {current_player['second_name']}\n")
-            
-#             if len(player["alternatives"]) != 0:
-#                 for alt_player in player["alternatives"]:
-#                     f.write(f'We recommend {alt_player["first_name"]} {alt_player["second_name"]} from Team: {alt_player["team"]}\n')
-#             else:
-#                 f.write("No cheaper alternatives\n")
-            
-#             f.write("____________________________________________________\n")
+
+def generate_writing():
+
+    curr = my_team.head.next
+    while curr != my_team.tail:
+        current_player = curr.data
+        print(f"{current_player["first_name"]} {current_player["second_name"]} Recommendations:")    
+        if len(curr.alts) > 0:
+            for alt_player in curr.alts:
+                print(f"Alt: {alt_player.data["first_name"]} {alt_player.data["second_name"]}")
+        else:
+            print("No recommendations!")
+        print("---------------------------------------")
+        curr = curr.next
+
+generate_writing()
 
 
 # try :

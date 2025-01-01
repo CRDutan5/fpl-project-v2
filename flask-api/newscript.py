@@ -18,7 +18,7 @@ class PlayerList:
         self.tail = Player(None, None)
         self.head.next = self.tail
     
-    def add(self, player_node):
+    def add_player(self, player_node):
         next_node = self.head.next
         self.head.next = player_node
         player_node.next = next_node
@@ -31,7 +31,7 @@ class PlayerList:
             curr = curr.next
             i+=1
 
-    def removed_player(self, player_node, prev_player_node):
+    def remove_player(self, player_node, prev_player_node):
         prev_player_node.next = player_node.next
         return player_node
 
@@ -41,11 +41,11 @@ available_players = PlayerList()
 for player in all_players_response:
     if player["id"] in my_player_ids:
         new_player = Player(player["id"], player, [])
-        my_team.add(new_player)
+        my_team.add_player(new_player)
 
     else:
         new_player = Player(player["id"], player)
-        available_players.add(new_player)
+        available_players.add_player(new_player)
 
 def generate_cheaper_alt():
     curr = my_team.head.next
@@ -58,7 +58,7 @@ def generate_cheaper_alt():
             if (float(curr.data["form"]) <= float(curr2.data["form"]) and 
                 curr.data["element_type"] == curr2.data["element_type"] and 
                 curr.data["now_cost"] >= curr2.data["now_cost"]):
-                alt_player = available_players.removed_player(curr2, curr2_prev)
+                alt_player = available_players.remove_player(curr2, curr2_prev)
                 curr.alts.append(alt_player.data["second_name"])
             curr2_prev = curr2
             curr2 = curr2.next
