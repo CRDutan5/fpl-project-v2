@@ -1,6 +1,7 @@
 from utils import get_main_response, my_current_team_picks_ids, determine_gameweek_for_picks, send_email
 import datetime
 import sys
+import json
 
 main_response = get_main_response()
 all_players_response = sorted(main_response["elements"], key=lambda x: x["now_cost"])
@@ -66,31 +67,62 @@ def generate_cheaper_alt():
             curr2 = curr2.next
         curr = curr.next
 
-generate_cheaper_alt()
-
 def generate_writing(file_path):
     with open(file_path, 'a') as f:
         curr = my_team.head.next
         while curr != my_team.tail:
             current_player = curr.data
-            f.write(f"{current_player["first_name"]} {current_player["second_name"]} Recommendations:\n")    
+            f.write(f"{current_player['first_name']} {current_player['second_name']} Recommendations:\n")    
             if len(curr.alts) > 0:
                 for alt_player in curr.alts:
-                    f.write(f"Alt: {alt_player.data["first_name"]} {alt_player.data["second_name"]}\n")
+                    f.write(f"Alt: {alt_player.data['first_name']} {alt_player.data['second_name']}\n")
             else:
                 f.write("No cheaper alternatives!\n")
             f.write("---------------------------------------\n")
             curr = curr.next
 
-try:
-    generate_writing(f"Gameweek-{current_gameweek}.txt")
-    print("Sending email...")
-    send_email(current_gameweek)
-    print("Email sent.")
-    current_time = datetime.datetime.now().strftime("%Y-%B-%d %H:%M:%S")
-    print(f'[{current_time}] Successfully executed script for Gameweek: {current_gameweek}')
+def handle_alts(player_alts):
+    list_alts = []
+    if len(player_alts) == 0:
+        return list_alts
+    
+    for player in player_alts:
+        list_alts.append({
+        "id": player.id,
+        "data": player.data,
+    })
+    return list_alts
+    
 
-except Exception as e:
-    current_time = datetime.datetime.now().strftime("%Y-%B-%d %H:%M:%S")
-    print(f'[{current_time}] Error executing script: {str(e)}', file=sys.stderr)
-    raise e
+def linked_list_to_json(player_list):
+    players = []
+    curr = player_list.head.next
+
+    while curr != player_list.tail:
+        players.append({
+            "id": curr.id,
+            "data": curr.data,
+            "alts": handle_alts(curr.alts)
+        })
+        curr = curr.next
+    return json.dumps({"team": players}, indent= 4)
+
+def parse_to_api():
+    generate_cheaper_alt()
+    json_data = linked_list_to_json(my_team)
+    return json_data
+
+
+# try:
+#     generate_cheaper_alt()
+#     generate_writing(f"Gameweek-{current_gameweek}.txt")
+#     print("Sending email...")
+#     send_email(current_gameweek)
+#     print("Email sent.")
+#     current_time = datetime.datetime.now().strftime("%Y-%B-%d %H:%M:%S")
+#     print(f'[{current_time}] Successfully executed script for Gameweek: {current_gameweek}')
+
+# except Exception as e:
+#     current_time = datetime.datetime.now().strftime("%Y-%B-%d %H:%M:%S")
+#     print(f'[{current_time}] Error executing script: {str(e)}', file=sys.stderr)
+#     raise e
